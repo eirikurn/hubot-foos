@@ -25,6 +25,9 @@ module.exports = (robot) ->
 
   getRoom = (msg) ->
     msg.message.user.room ? 'default'
+    
+  getUsername = (user) ->
+    '@' + (user.mention_name or user.name)
 
   init = (msg) ->
     room = getRoom msg 
@@ -42,7 +45,7 @@ module.exports = (robot) ->
   robot.hear /foos\sme/i, (msg) ->
     init msg
     players = robot.brain.data.foos[getRoom(msg)]
-    players.push('@' + msg.message.user.mention_name)
+    players.push(getUsername(msg.message.user))
     showLineup msg
     if players.length == maxLength - 1
       msg.send 'One more player needed!'
@@ -53,7 +56,7 @@ module.exports = (robot) ->
   robot.hear /foos\sremove/i, (msg) ->
     init msg
     room = getRoom(msg)
-    player = '@' + msg.message.user.mention_name
+    player = getUsername(msg.message.user)
     robot.brain.data.foos[room] = _.without(robot.brain.data.foos[room], player)
     showLineup msg
 
